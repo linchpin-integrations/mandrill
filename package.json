@@ -1,0 +1,38 @@
+{
+  "name": "lpi-mandrill",
+  "version": "0.0.1",
+  "description": "LinchPin mandrill integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linchpin-integrations/mandrill.git"
+  },
+  "keywords": [
+    "mandrill",
+    "linchpin",
+    "integrations"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/linchpin-integrations/mandrill/issues"
+  },
+  "homepage": "https://github.com/linchpin-integrations/mandrill",
+  "dependencies": {
+    "getenv": "*",
+    "moment": "^2.10.6",
+    "seneca": "^0.6.1",
+    "underscore": "^1.8.3",
+    "urlencode": "^1.1.0"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.2",
+    "mocha-lcov-reporter": "0.0.2",
+    "istanbul": "^0.3.13",
+    "chai": "2.3.0",
+    "mocha": "*"
+  }
+}

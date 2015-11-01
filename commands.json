@@ -1,0 +1,25 @@
+{
+  "process_hook": {
+    "type": "object",
+    "description":"Process Mandrill Events from a hook",
+    "properties": {
+      "name": {
+        "type":"string",
+        "title":"Name"
+      },
+      "validate_signature":{
+        "type":"boolean",
+        "title":"Validate Mandrill signature?"
+      },
+      "api_key":{
+        "type":"string",
+        "title":"Mandrill Api Key"
+      }
+    },
+    "dependencies":{
+      "api_key":"validate_signature"
+    },
+    "required": ["name","validate_signature"],
+    "additionalProperties":false
+  }
+}
