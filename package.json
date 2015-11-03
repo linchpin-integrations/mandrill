@@ -23,7 +23,9 @@
   "homepage": "https://github.com/linchpin-integrations/mandrill",
   "dependencies": {
     "getenv": "*",
+    "mandrill-webhook-validator": "^0.1.0",
     "moment": "^2.10.6",
+    "parse-headers": "^2.0.0",
     "seneca": "^0.6.1",
     "underscore": "^1.8.3",
     "urlencode": "^1.1.0"

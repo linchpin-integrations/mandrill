@@ -3,6 +3,8 @@ var pjson = require('./package.json');
 var _ = require('underscore');
 var moment = require('moment');
 var urlencode = require('urlencode');
+var validator = require('mandrill-webhook-validator');
+var parse = require('parse-headers');
 
 var service = {
     "name": "mandrill",
@@ -12,7 +14,7 @@ var service = {
     "private": true,
     "form_options": null,
     "is_oauth": false,
-    "logo": "//linchpin-web-assets.s3.amazonaws.com/v1/integrations/mandrill/logos/mandrill.png",
+    "logo": "//linchpin-web-assets.s3.amazonaws.com/v1/integrations/mandrill/logos/mandrill-logo.png",
     "server_integration": true,
     "frontend_integration": true,
     "webhook_commands":["process_hook"]
@@ -41,6 +43,7 @@ module.exports = function(options) {
     }
 
     function process_hook(args,done){
+        var config = args.config;
         var event = urlencode.parse(args.env.post,{charset: "utf8"});
         var event_list = JSON.parse(event['mandrill_events']);
         var list = [];
@@ -53,31 +56,29 @@ module.exports = function(options) {
 
         console.log(event);
 
-/*
-        if(_.isArray(event)){
-            event.forEach(function(value){
-                if(_.isArray(value['values'])){
-                    value.values.forEach(function(v,i){
-                        var event = {
-                            value: value['values'][i],
-                            ds_type: value['dstypes'][i],
-                            name: value['dsnames'][i],
-                            interval: value.interval,
-                            host: value.host,
-                            plugin: value.plugin,
-                            plugin_instance: value.plugin_instance,
-                            type: value.type,
-                            type_instance: value.type_instance,
-                            LinchPin:{
-                                CreatedTime: moment.unix(value.time).utc().toISOString()
-                            }
-                        };
-                        list.push(event);
-                    });
-                }
-            });
+    if (config.validate_signature == true) {
+        var key = config.api_key;
+        var headers = parse((args.env.headers).join('\n'));
+        var signature = headers['x-mandrill-signature'];
+        var endpoint = headers['x-linchpin-endpoint'];
+        var csig = validator.makeSignature(key, endpoint, event);
+        if (signature !== csig) {
+            return done(new Error("Invalid signature"));
         }
-*/
-        done(null, event_list);
+    }
+
+    if(_.isArray(event_list)){
+        event_list.forEach(function(mandrill_event){
+            var event = {
+                LinchPin:{
+                    CreatedTime: moment.unix(mandrill_event.ts).utc().toISOString(),
+                    LastUpdatedTime: moment.unix(mandrill_event.ts).utc().toISOString()
+                }
+            };
+            list.push(_.extend(mandrill_event,event));
+        });
+    }
+
+        done(null, list);
     }
 };
